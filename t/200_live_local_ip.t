@@ -33,7 +33,7 @@ my $response = $tiny->get($test_url);
 ok( $response->{status} ne '599', "Request to $test_url completed" )
   or dump_hash($response);
 ok( $response->{content}, "Got content" );
-ok( index $response->{content}, $ENV{PERL_HTTP_TINY_LOCAL_IP},
+ok( index($response->{content}, $ENV{PERL_HTTP_TINY_LOCAL_IP}),
   "We made the request from user-specified local IP" );
 
 sub dump_hash {
