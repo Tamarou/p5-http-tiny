@@ -21,31 +21,32 @@ plan skip_all => 'Only run for $ENV{AUTOMATED_TESTING}'
 plan skip_all => "Can't test SSL with http_proxy set"
   if $ENV{http_proxy};
 
+plan 'skip_all' => "Set \$ENV{PERL_HTTP_TINY_IPV6_ADDRESS} to run these tests"
+  unless $ENV{PERL_HTTP_TINY_IPV6_ADDRESS};
+
+my $v6_local = $ENV{PERL_HTTP_TINY_IPV6_ADDRESS};
+plan 'skip_all' => "Internet connection timed out"
+  unless IO::Socket::IP->new(
+    LocalAddr => $v6_local,
+    PeerHost  => 'ipv6.google.com',
+    PeerPort  => 443,
+    Proto     => 'tcp',
+    Timeout   => 10,
+  );
+
 my $data = {
-    'https://www.google.ca/' => {
-        host => 'www.google.ca',
-        pass => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'www.google.ca', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
+    'https://ipv6.google.com/' => {
+        host => 'ipv6.google.com',
+        pass => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'ipv6.google.com', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
         fail => { SSL_verify_callback => sub { 0 }, SSL_verify_mode => 0x01 },
         default_should_yield => '1',
     },
-    'https://twitter.com/' => {
-        host => 'twitter.com',
-        pass => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'twitter.com', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
+    'https://www.v6.facebook.com/' => {
+        host => 'www.v6.facebook.com',
+        pass => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'www.v6.facebook.com', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
         fail => { SSL_verify_callback => sub { 0 }, SSL_verify_mode => 0x01 },
         default_should_yield => '1',
     },
-    'https://github.com/' => {
-        host => 'github.com',
-        pass => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'github.com', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
-        fail => { SSL_verify_callback => sub { 0 }, SSL_verify_mode => 0x01 },
-        default_should_yield => '1',
-    },
-    'https://spinrite.com/' => {
-        host => 'spinrite.com',
-        pass => { SSL_verifycn_scheme => 'none', SSL_verifycn_name => 'spinrite.com', SSL_verify_mode => 0x00 },
-        fail => { SSL_verifycn_scheme => 'http', SSL_verifycn_name => 'spinrite.com', SSL_verify_mode => 0x01, SSL_ca_file => Mozilla::CA::SSL_ca_file() },
-        default_should_yield => '',
-    }
 };
 plan tests => scalar keys %$data;
 
@@ -54,6 +55,7 @@ while (my ($url, $data) = each %$data) {
     subtest $url => sub {
         plan 'skip_all' => 'Internet connection timed out'
             unless IO::Socket::IP->new(
+                LocalAddr => $v6_local,
                 PeerHost  => $data->{host},
                 PeerPort  => 443,
                 Proto     => 'tcp',

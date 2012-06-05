@@ -553,7 +553,7 @@ use strict;
 use warnings;
 
 use Errno      qw[EINTR EPIPE];
-use IO::Socket qw[SOCK_STREAM];
+use IO::Socket::IP qw[SOCK_STREAM];
 
 sub BUFSIZE () { 32768 } ## no critic
 
@@ -592,7 +592,7 @@ sub connect {
     elsif ( $scheme ne 'http' ) {
       die(qq/Unsupported URL scheme '$scheme'\n/);
     }
-    $self->{fh} = 'IO::Socket::INET'->new(
+    $self->{fh} = 'IO::Socket::IP'->new(
         PeerHost  => $host,
         PeerPort  => $port,
         $self->{local_address} ? 

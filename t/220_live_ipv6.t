@@ -7,15 +7,20 @@ use IO::Socket::IP;
 use Test::More 0.88;
 use HTTP::Tiny;
 
-my $test_host = "google.com";
-my $test_url  = "http://www.google.com/";
+my $test_host = "ipv6.google.com";
+my $test_url  = "http://ipv6.google.com/";
 my $test_re   = qr/google/;
 
 plan 'skip_all' => "Only run for \$ENV{AUTOMATED_TESTING}"
   unless $ENV{AUTOMATED_TESTING};
 
+plan 'skip_all' => "Set \$ENV{PERL_HTTP_TINY_IPV6_ADDRESS} to run these tests"
+  unless $ENV{PERL_HTTP_TINY_IPV6_ADDRESS};
+
+my $v6_local = $ENV{PERL_HTTP_TINY_IPV6_ADDRESS};
 plan 'skip_all' => "Internet connection timed out"
   unless IO::Socket::IP->new(
+    LocalAddr => $v6_local,
     PeerHost  => $test_host,
     PeerPort  => 80,
     Proto     => 'tcp',

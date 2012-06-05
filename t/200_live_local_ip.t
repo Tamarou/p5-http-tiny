@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use IO::Socket::INET;
+use IO::Socket::IP;
 use Test::More 0.88;
 use HTTP::Tiny;
 
@@ -14,7 +14,7 @@ plan 'skip_all' => "Only run for \$ENV{AUTOMATED_TESTING}"
   unless $ENV{AUTOMATED_TESTING};
 
 plan 'skip_all' => "Internet connection timed out"
-  unless IO::Socket::INET->new(
+  unless IO::Socket::IP->new(
     PeerHost  => $test_host,
     PeerPort  => 80,
     Proto     => 'tcp',
